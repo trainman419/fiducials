@@ -1426,7 +1426,7 @@ void Fiducials__tag_record(Unsigned direction, CV_Point2D32F_Vector vector) {
 }
                   
 void Fiducials__tag_heights_xml_read(
-  Fiducials fiducials, char * xml_file_name) {
+  Fiducials fiducials, const char * xml_file_name) {
     File xml_in_file = File__open(xml_file_name, "r");
     if (xml_in_file == (File)0) {
         File__format(stderr, "Could not open '%s'\n", xml_file_name);
