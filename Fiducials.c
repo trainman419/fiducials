@@ -834,12 +834,12 @@ Unsigned Fiducials__process(Fiducials fiducials) {
             Double bearing =
               Double__angle_normalize(camera_tag->twist + tag->twist);
 
-	    // FIXME: Kludge,  There is a sign error somewhere in the code
-	    // causes the "sign" on the X axis to be inverted.  We kludge
-	    // around the problem with the following disgusting code:
-	    bearing = Double__angle_normalize(bearing - pi / 2.0);
-	    bearing = -bearing;
-	    bearing = Double__angle_normalize(bearing + pi / 2.0);
+            // FIXME: Kludge,  There is a sign error somewhere in the code
+            // causes the "sign" on the X axis to be inverted.  We kludge
+            // around the problem with the following disgusting code:
+            bearing = Double__angle_normalize(bearing - pi / 2.0);
+            bearing = -bearing;
+            bearing = Double__angle_normalize(bearing + pi / 2.0);
 
             File__format(stderr,
               "[%d]:x=%f:y=%f:bearing=%f\n", index, x, y, bearing * 180.0 / pi);
