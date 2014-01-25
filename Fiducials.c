@@ -135,14 +135,16 @@ Fiducials Fiducials__create(
   CV_Image original_image, const char * lens_calibrate_file_name,
   void *announce_object,
   Fiducials_Location_Announce_Routine location_announce_routine,
-  Fiducials_Tag_Announce_Routine tag_announce_routine) {
+  Fiducials_Tag_Announce_Routine tag_announce_routine,
+  bool verbose) {
     // Create *image_size*:
     Unsigned width = CV_Image__width_get(original_image);
     Unsigned height = CV_Image__height_get(original_image);
     CV_Size image_size = CV_Size__create(width, height);
     CV_Memory_Storage storage = CV_Memory_Storage__create(0);
 
-    File__format(stderr, "CV width=%d CV height = %d\n", width, height);
+    if( verbose )
+      File__format(stderr, "CV width=%d CV height = %d\n", width, height);
 
     Integer term_criteria_type =
       CV__term_criteria_iterations | CV__term_criteria_eps;
@@ -364,6 +366,7 @@ Fiducials Fiducials__create(
       CV_Term_Criteria__create(term_criteria_type, 5, 0.2);
     fiducials->y_flip = (Logical)0;
     fiducials->black = CV_Scalar__rgb(0, 0, 0);
+    fiducials->verbose = verbose;
 
     return fiducials;
 }
@@ -570,8 +573,9 @@ Unsigned Fiducials__process(Fiducials fiducials) {
                         assert(0);
                     }
                     CV_Image__cross_draw(debug_image, x, y, color);
-                    File__format(stderr,
-                      "poly_point[%d]=(%d:%d) %s\n", index, x, y, text);
+                    if( fiducials->verbose )
+                      File__format(stderr,
+                        "poly_point[%d]=(%d:%d) %s\n", index, x, y, text);
                 }
             }
 
@@ -615,7 +619,8 @@ Unsigned Fiducials__process(Fiducials fiducials) {
                         color = green;
                     }
                     CV_Image__cross_draw(debug_image, x, y, color);
-                    File__format(stderr, "ref[%d:%d]:%d\n", x, y, value);
+                    if( fiducials->verbose )
+                      File__format(stderr, "ref[%d:%d]:%d\n", x, y, value);
                 }
             }
 
@@ -803,8 +808,9 @@ Unsigned Fiducials__process(Fiducials fiducials) {
         Double pi = 3.14159265358979323846264;
         Unsigned half_width = CV_Image__width_get(gray_image) >> 1;
         Unsigned half_height = CV_Image__height_get(gray_image) >> 1;
-        File__format(stderr,
-          "half_width=d half_height=%d\n", half_width, half_height);
+        if( fiducials->verbose )
+          File__format(stderr,
+            "half_width=d half_height=%d\n", half_width, half_height);
         Location closest_location = (Location)0;
         for (Unsigned index = 0; index < camera_tags_size; index++) {
             Camera_Tag camera_tag = (Camera_Tag)List__fetch(camera_tags, index);
@@ -841,8 +847,9 @@ Unsigned Fiducials__process(Fiducials fiducials) {
             bearing = -bearing;
             bearing = Double__angle_normalize(bearing + pi / 2.0);
 
-            File__format(stderr,
-              "[%d]:x=%f:y=%f:bearing=%f\n", index, x, y, bearing * 180.0 / pi);
+            if( fiducials->verbose )
+              File__format(stderr, "[%d]:x=%f:y=%f:bearing=%f\n", index,
+                  x, y, bearing * 180.0 / pi);
             Unsigned location_index = List__size(locations);
             Location location =
               Location__create(x, y, bearing, floor_distance, location_index);
@@ -867,7 +874,8 @@ Unsigned Fiducials__process(Fiducials fiducials) {
               closest_location->x, closest_location->y, 0.0,
               closest_location->bearing);
         }
-        File__format(stderr, "\n");
+        if( fiducials->verbose )
+          File__format(stderr, "\n");
     }
 
     // Clean out *camera_tags*:

@@ -71,6 +71,7 @@ struct Fiducials__Struct {
     CV_Term_Criteria term_criteria;
     Unsigned weights_index;
     Logical y_flip;
+    bool verbose;
 };
 
 extern void Fiducials__location_announce(void *object, Integer id,
@@ -83,7 +84,8 @@ extern Fiducials Fiducials__create(
   CV_Image original_image, const char * lens_calibrate_file_name,
   void *announce_object,
   Fiducials_Location_Announce_Routine location_announce_routine,
-  Fiducials_Tag_Announce_Routine tag_announce_routine);
+  Fiducials_Tag_Announce_Routine tag_announce_routine,
+  bool verbose);
 extern void Fiducials__image_set(Fiducials fiducials, CV_Image image);
 extern void Fiducials__image_show(Fiducials fiducials, Logical show);
 extern Unsigned Fiducials__process(Fiducials fiducials);
